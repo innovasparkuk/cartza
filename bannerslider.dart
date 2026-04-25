@@ -1,4 +1,4 @@
-import 'package:ecommercepro/detailpage.dart';
+
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 
@@ -14,9 +14,9 @@ class _BannerSliderState extends State<BannerSlider> {
   int _currentIndex = 0;
 
   final List<String> imageAssets = [
-    'assets/Images/mobile sale.jpeg',
-    'assets/Images/blackfriday.jpg',
-    'assets/Images/womenslae.jpeg'
+    'assets/images/mobile sale.jpeg',
+    'assets/images/blackfriday.jpg',
+    'assets/images/womenslae.jpeg'
 
   ];
 
@@ -113,4 +113,5 @@ class _BannerSliderState extends State<BannerSlider> {
     ),
       ],);
   }
+
 }
