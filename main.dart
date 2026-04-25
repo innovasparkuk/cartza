@@ -21,52 +21,20 @@ class CartzaApp extends StatelessWidget {
           secondary: const Color(0xFFFF6F00),
         ),
       ),
-      home: const RoleTabs(),
+
+      // 🔹 DIRECT LOGIN PAGE
+      home: const ResponsiveLoginPage(role: "User"),
     );
   }
 }
 
-class RoleTabs extends StatelessWidget {
-  const RoleTabs({super.key});
+////////////////////////////////////////////////////////////
+/// USER HOME PAGE
+////////////////////////////////////////////////////////////
 
-  @override
-  Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: 2,
-      child: Scaffold(
-        appBar: PreferredSize(
-          preferredSize: const Size.fromHeight(70),
-          child: AppBar(
-            backgroundColor: const Color(0xFF4CAF50),
-            title: const Text("Cartza Login", style: TextStyle(color: Colors.white,
-              fontWeight: FontWeight.w600,)),
-            centerTitle: true,
-            bottom: const TabBar(
-              indicatorColor: Colors.white,
-              labelColor: Colors.white,
-              unselectedLabelColor: Colors.black54,
-              indicatorWeight: 3,
-              tabs: [
-                Tab(text: "User"),
-                Tab(text: "Seller"),
-              ],
-            ),
-          ),
-        ),
-        body: const TabBarView(
-          children: [
-            AuthForm(role: "User"),
-            AuthForm(role: "Seller"),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-// Define HomePage and SellerPage classes here to fix the reference errors
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -78,13 +46,23 @@ class HomePage extends StatelessWidget {
         ),
         elevation: 0,
       ),
-      body: const Center(child: Text("Welcome User!", style: TextStyle(fontSize: 18))),
+      body: const Center(
+        child: Text(
+          "Welcome User!",
+          style: TextStyle(fontSize: 18),
+        ),
+      ),
     );
   }
 }
 
+////////////////////////////////////////////////////////////
+/// SELLER PAGE
+////////////////////////////////////////////////////////////
+
 class SellerPage extends StatelessWidget {
   const SellerPage({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -96,7 +74,12 @@ class SellerPage extends StatelessWidget {
         ),
         elevation: 0,
       ),
-      body: const Center(child: Text("Welcome Seller!", style: TextStyle(fontSize: 18))),
+      body: const Center(
+        child: Text(
+          "Welcome Seller!",
+          style: TextStyle(fontSize: 18),
+        ),
+      ),
     );
   }
 }
