@@ -1,6 +1,7 @@
-import 'package:cartza/homepage.dart';
+
+import 'homepage.dart';
 import 'package:flutter/material.dart';
-import '../models/cart_item.dart';
+import 'cart_item.dart';
 
 class CartDrawer extends StatelessWidget {
   final List<CartItem> cart;
@@ -61,7 +62,7 @@ class CartDrawer extends StatelessWidget {
                 Navigator.pop(context); // Close drawer
                 Navigator.pushReplacement(
                   context,
-                  MaterialPageRoute(builder: (context) => const Homepage()),
+                  MaterialPageRoute(builder: (context) =>  homepage()),
                 );
               },
               child: Container(
@@ -188,3 +189,4 @@ class CartDrawer extends StatelessWidget {
     );
   }
 }
+

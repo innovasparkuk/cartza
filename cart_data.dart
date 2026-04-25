@@ -1,6 +1,5 @@
-import '../models/cart_item.dart';
 
-/// Global shared cart accessible across pages
+import 'cart_item.dart';
 List<CartItem> globalCart = [];
 
 /// Adds an item to the cart

@@ -1,3 +1,4 @@
+
 class CartItem {
   final String name;
   final String image;
@@ -11,3 +12,4 @@ class CartItem {
     this.quantity = 1,
   });
 }
+

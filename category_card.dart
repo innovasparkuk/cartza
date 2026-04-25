@@ -1,3 +1,4 @@
+
 import 'package:flutter/material.dart';
 
 class CategoryCard extends StatelessWidget {
@@ -30,4 +31,5 @@ class CategoryCard extends StatelessWidget {
       ),
     );
   }
+
 }

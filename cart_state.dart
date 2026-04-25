@@ -1,4 +1,5 @@
-import 'models/cart_item.dart';
+
+import 'cart_item.dart';
 
 /// Shared global cart used across the app
 List<CartItem> globalCart = [];
@@ -44,3 +45,4 @@ void clearCart() {
 double getCartTotal() {
   return globalCart.fold(0, (sum, item) => sum + (item.price * item.quantity));
 }
+
