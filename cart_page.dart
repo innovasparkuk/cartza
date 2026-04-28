@@ -12,6 +12,7 @@
 //  ✅ GREEN gradient checkout button
 //  ✅ CENTERED MAX-WIDTH LAYOUT FOR WEB — empty margins on both sides
 //  ✅ AppBar content also centered
+//  ✅ Footer removed on Android/mobile (only visible on desktop)
 // ============================================================
 
 import 'package:flutter/material.dart';
@@ -592,6 +593,7 @@ class _CartPageState extends State<CartPage> {
   // ✅ Right panel sticky
   // ✅ Checkout button only in summary (no extra bar)
   // ✅ Content centered with max-width 1200
+  // ✅ Footer present on desktop
   // ============================================================
   Widget _buildDesktopBody(bool isDesktop) {
     return CustomScrollView(
@@ -664,7 +666,7 @@ class _CartPageState extends State<CartPage> {
             ),
           ),
         ),
-        // ── FOOTER — full width at bottom
+        // ── FOOTER — full width at bottom (DESKTOP ONLY)
         const SliverToBoxAdapter(child: _CartFooter()),
         const SliverToBoxAdapter(child: SizedBox(height: 16)),
       ],
@@ -672,7 +674,7 @@ class _CartPageState extends State<CartPage> {
   }
 
   // ============================================================
-  // MOBILE BODY — single ListView
+  // MOBILE BODY — single ListView (NO FOOTER on Android/mobile)
   // ============================================================
   Widget _buildMobileBody() {
     return ListView(
@@ -716,7 +718,7 @@ class _CartPageState extends State<CartPage> {
           categories: categories,
           onTap: (catName) => _openStoreSheet(initialCatName: catName),
         ),
-        const _CartFooter(),
+        // Footer removed entirely on mobile/Android
         const SizedBox(height: 16),
       ],
     );
@@ -728,7 +730,7 @@ class _CartPageState extends State<CartPage> {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        // Mobile bottom bar (compact checkout summary, not used on desktop)
+        // Mobile bottom bar (compact checkout summary)
         _MobileCheckoutBar(
           allSelected:   _allSelected,
           onToggleAll:   _toggleAll,
@@ -2170,7 +2172,7 @@ class _EmptyCart extends StatelessWidget {
 }
 
 // ============================================================
-// CART FOOTER — Full width with centered content
+// CART FOOTER — Full width with centered content (DESKTOP ONLY)
 // ============================================================
 class _CartFooter extends StatelessWidget {
   const _CartFooter();
