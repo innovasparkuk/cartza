@@ -297,24 +297,24 @@ class _ProfilePageState extends State<ProfilePage> {
           ),
           const SizedBox(height: 12),
 
-              Align(
-                alignment: Alignment.center,
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 200), // ✅ sets a max width
-                  child: ElevatedButton(
-                    onPressed: () {},
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF4CAF50),
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                    ),
-                    child: const Text("View Details"),
+          Align(
+            alignment: Alignment.center,
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 200), // ✅ sets a max width
+              child: ElevatedButton(
+                onPressed: () {},
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF4CAF50),
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
                   ),
                 ),
-              )
+                child: const Text("View Details"),
+              ),
+            ),
+          )
 
         ],
       ),
@@ -356,7 +356,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   crossAxisCount: 2,
                   crossAxisSpacing: 16,
                   mainAxisSpacing: 16,
-                    mainAxisExtent: 250,
+                  mainAxisExtent: 250,
                 ),
                 itemCount: _wishlistItems.length,
                 itemBuilder: (context, index) {

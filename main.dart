@@ -1,72 +1,71 @@
+import 'package:cartza_user/applocalization.dart';
 import 'package:flutter/material.dart';
 import 'login_page.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'appprovider.dart';
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  final provider = AppProvider();
+  await provider.init();  // important — initialise before runApp
 
-void main() {
-  runApp(const CartzaApp());
+  runApp(
+    ChangeNotifierProvider<AppProvider>(
+      create: (_) => provider,
+      child: const CartzaApp(),
+    ),
+  );
 }
 
-class CartzaApp extends StatelessWidget {
+class CartzaApp extends StatefulWidget {
   const CartzaApp({super.key});
+
+  @override
+  State<CartzaApp> createState() => _CartzaAppState();
+}
+
+class _CartzaAppState extends State<CartzaApp> {
+  Locale _locale = const Locale('en'); // default language
+
+  // Function to change language
+  void setLocale(Locale locale) {
+    setState(() {
+      _locale = locale;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: "Cartza",
-      theme: ThemeData(
-        fontFamily: "Roboto",
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFF4CAF50),
-          primary: const Color(0xFF4CAF50),
-          secondary: const Color(0xFFFF6F00),
-        ),
-      ),
-      home: const RoleTabs(),
+
+      // ✅ HOME PAGE (FIXED POSITION)
+      home: const ResponsiveLoginPage(role: "User"),
+
+      // ✅ LOCALIZATION
+      locale: _locale,
+      supportedLocales: const [
+        Locale('en'),
+        Locale('ur'),
+      ],
+      localizationsDelegates: const [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
     );
   }
 }
 
-class RoleTabs extends StatelessWidget {
-  const RoleTabs({super.key});
+////////////////////////////////////////////////////////////
+/// USER HOME PAGE
+////////////////////////////////////////////////////////////
 
-  @override
-  Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: 2,
-      child: Scaffold(
-        appBar: PreferredSize(
-          preferredSize: const Size.fromHeight(70),
-          child: AppBar(
-            backgroundColor: const Color(0xFF4CAF50),
-            title: const Text("Cartza Login", style: TextStyle(color: Colors.white,
-              fontWeight: FontWeight.w600,)),
-            centerTitle: true,
-            bottom: const TabBar(
-              indicatorColor: Colors.white,
-              labelColor: Colors.white,
-              unselectedLabelColor: Colors.black54,
-              indicatorWeight: 3,
-              tabs: [
-                Tab(text: "User"),
-                Tab(text: "Seller"),
-              ],
-            ),
-          ),
-        ),
-        body: const TabBarView(
-          children: [
-            AuthForm(role: "User"),
-            AuthForm(role: "Seller"),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-// Define HomePage and SellerPage classes here to fix the reference errors
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -78,13 +77,23 @@ class HomePage extends StatelessWidget {
         ),
         elevation: 0,
       ),
-      body: const Center(child: Text("Welcome User!", style: TextStyle(fontSize: 18))),
+      body: const Center(
+        child: Text(
+          "Welcome User!",
+          style: TextStyle(fontSize: 18),
+        ),
+      ),
     );
   }
 }
 
+////////////////////////////////////////////////////////////
+/// SELLER PAGE
+////////////////////////////////////////////////////////////
+
 class SellerPage extends StatelessWidget {
   const SellerPage({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -96,7 +105,12 @@ class SellerPage extends StatelessWidget {
         ),
         elevation: 0,
       ),
-      body: const Center(child: Text("Welcome Seller!", style: TextStyle(fontSize: 18))),
+      body: const Center(
+        child: Text(
+          "Welcome Seller!",
+          style: TextStyle(fontSize: 18),
+        ),
+      ),
     );
   }
 }
