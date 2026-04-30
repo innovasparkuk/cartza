@@ -1,609 +1,696 @@
-import 'package:flutter/material.dart';
+// ============================================================
+//  CARTZA — Messages Page  (Daraz / Temu style)
+//  ✅ FULLY CENTRALIZED layout — maxWidth: 1200 everywhere
+//  ✅ Full‑width AppBar with centred content
+//  ✅ Banners FULLY VISIBLE — natural height, never cropped
+//  ✅ Desktop: shows full content + Footer
+//  ✅ Mobile: shows bottom navigation bar (icons) + no footer
+//  ✅ 4 tabs: Chats · Orders · Activities · Promos
+//  ✅ Banner ad images per notification (like Daraz)
+//  ✅ Matches Cartza brand: orange #FF6F00, green #4CAF50
+//  ✅ Mark all as read, swipe to dismiss, unread dots
+//  ✅ Time‑grouped (Last 7 days / Older)
+//  ✅ Animated tab switching & card entrance
+// ============================================================
 
-enum NotificationType {
-  order,
-  promotion,
-  delivery,
-  payment,
-  wishlist,
-  general,
-  shipping,
-  review,
-  priceAlert
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+
+// ─── Brand colours (matches Cartza) ─────────────────────────
+class _C {
+  static const orange    = Color(0xFFFF6F00);
+  static const orangeL   = Color(0xFFFFF3E0);
+  static const green     = Color(0xFF4CAF50);
+  static const darkGreen = Color(0xFF2E7D32);
+  static const greenL    = Color(0xFFE8F5E9);
+  static const bg        = Color(0xFFF4F6F8);
+  static const white     = Colors.white;
+  static const dark      = Color(0xFF212121);
+  static const slate     = Color(0xFF37474F);
+  static const grey      = Color(0xFF757575);
+  static const greyL     = Color(0xFFEEEEEE);
+  static const red       = Color(0xFFE53935);
+  static const blue      = Color(0xFF1565C0);
+  static const amber     = Color(0xFFFF8F00);
 }
 
-class NotificationItem {
-  final String id;
-  final String title;
-  final String message;
-  final NotificationType type;
-  final DateTime timestamp;
-  final bool isRead;
-  final String? imageUrl;
-  final String? routeName;
-  final Map<String, dynamic>? routeArguments;
+// ─── Responsive breakpoints (matches Homepage) ───────────────
+class _BP {
+  static const maxW = 1200.0;
+  static const mob  = 816.0;
+  static const desk = 1280.0;
 
-  NotificationItem({
-    required this.id,
-    required this.title,
-    required this.message,
-    required this.type,
-    required this.timestamp,
-    this.isRead = false,
-    this.imageUrl,
-    this.routeName,
-    this.routeArguments,
-  });
+  static double w(BuildContext c) => MediaQuery.sizeOf(c).width;
+  static bool isMob(BuildContext c)  => w(c) < mob;
+  static bool isDesk(BuildContext c) => w(c) >= desk;
 
-  NotificationItem copyWith({bool? isRead}) {
-    return NotificationItem(
-      id: id,
-      title: title,
-      message: message,
-      type: type,
-      timestamp: timestamp,
-      isRead: isRead ?? this.isRead,
-      imageUrl: imageUrl,
-      routeName: routeName,
-      routeArguments: routeArguments,
-    );
+  static double hp(BuildContext c) {
+    final sw = w(c);
+    if (sw < mob)  return 12;
+    if (sw < 960)  return 18;
+    return 24;
   }
 }
 
-class NotificationsPage extends StatefulWidget {
-  const NotificationsPage({Key? key}) : super(key: key);
+// ─── Tab definition ──────────────────────────────────────────
+enum _Tab { chats, orders, activities, promos }
+
+extension _TabX on _Tab {
+  String get label => const ['Chats', 'Orders', 'Activities', 'Promos'][index];
+  IconData get icon => const [
+    Icons.chat_bubble_outline_rounded,
+    Icons.shopping_bag_outlined,
+    Icons.bolt_outlined,
+    Icons.campaign_outlined,
+  ][index];
+  Color get color => [_C.green, _C.orange, _C.amber, _C.orange][index];
+}
+
+// ─── Message Item model ──────────────────────────────────────
+class _Msg {
+  final String id;
+  final _Tab tab;
+  final String title;
+  final String subtitle;
+  final String? bannerUrl;
+  final DateTime time;
+  bool isRead;
+
+  _Msg({
+    required this.id,
+    required this.tab,
+    required this.title,
+    required this.subtitle,
+    this.bannerUrl,
+    required this.time,
+    this.isRead = false,
+  });
+}
+
+// ─── Sample data ─────────────────────────────────────────────
+final List<_Msg> _sampleMessages = [
+  _Msg(
+    id: 'p1', tab: _Tab.promos,
+    title: '60% OFF on New Brands 👀',
+    subtitle: 'Saya, Carrefour, Johnson\'s, Sony & more.. 😎💸',
+    bannerUrl: 'https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=1200&q=80',
+    time: DateTime.now().subtract(const Duration(hours: 14)), isRead: false,
+  ),
+  _Msg(
+    id: 'p2', tab: _Tab.promos,
+    title: 'Smartphones Rs.11,499 💚',
+    subtitle: 'Cartza pe milrahe hain mobiles upto 15% OFF pe! 😍',
+    bannerUrl: 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=1200&q=80',
+    time: DateTime.now().subtract(const Duration(hours: 18)), isRead: false,
+  ),
+  _Msg(
+    id: 'p3', tab: _Tab.promos,
+    title: '70% OFF + Rs.350 Extra Voucher 💸',
+    subtitle: 'Best Branded Deals — 3X Cash Back Guaranteed! 🤩',
+    bannerUrl: 'https://images.unsplash.com/photo-1556741533-6e6a3bd8a0d2?w=1200&q=80',
+    time: DateTime.now().subtract(const Duration(hours: 22)), isRead: true,
+  ),
+  _Msg(
+    id: 'p4', tab: _Tab.promos,
+    title: 'Fashion starting Rs.699 👗',
+    subtitle: 'Style Sunday — LAST DAY! Shop trending fashion now.',
+    bannerUrl: 'https://images.unsplash.com/photo-1483985988355-763728e1935b?w=1200&q=80',
+    time: DateTime.now().subtract(const Duration(days: 2)), isRead: true,
+  ),
+  _Msg(
+    id: 'p5', tab: _Tab.promos,
+    title: 'Beauty Deals up to 50% OFF 💄',
+    subtitle: 'Skincare, Makeup & more — Limited time offer!',
+    bannerUrl: 'https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=1200&q=80',
+    time: DateTime.now().subtract(const Duration(days: 4)), isRead: true,
+  ),
+  _Msg(
+    id: 'a1', tab: _Tab.activities,
+    title: 'Extra discounts 🥳',
+    subtitle: 'SHOP NOW with coins to get 20% off.',
+    bannerUrl: 'https://images.unsplash.com/photo-1472851294608-062f824d29cc?w=1200&q=80',
+    time: DateTime.now().subtract(const Duration(hours: 10)), isRead: false,
+  ),
+  _Msg(
+    id: 'a2', tab: _Tab.activities,
+    title: 'Extra discounts 🥳',
+    subtitle: 'SHOP NOW with coins to get 20% off.',
+    bannerUrl: 'https://images.unsplash.com/photo-1472851294608-062f824d29cc?w=1200&q=80',
+    time: DateTime.now().subtract(const Duration(days: 2)), isRead: true,
+  ),
+  _Msg(
+    id: 'a3', tab: _Tab.activities,
+    title: 'Win iPhone & 99% OFF 🥳',
+    subtitle: 'Play game to win exciting prizes every day!',
+    bannerUrl: 'https://images.unsplash.com/photo-1519985176271-adb1088fa94c?w=1200&q=80',
+    time: DateTime.now().subtract(const Duration(days: 4)), isRead: true,
+  ),
+  _Msg(
+    id: 'o1', tab: _Tab.orders,
+    title: 'Order Shipped 🚚',
+    subtitle: 'Your order #12345 is on its way! Est. delivery in 2-3 days.',
+    time: DateTime.now().subtract(const Duration(hours: 2)), isRead: false,
+  ),
+  _Msg(
+    id: 'o2', tab: _Tab.orders,
+    title: 'Order Delivered ✅',
+    subtitle: 'Your order #12340 has been delivered. Rate your experience!',
+    time: DateTime.now().subtract(const Duration(days: 1)), isRead: true,
+  ),
+  _Msg(
+    id: 'o3', tab: _Tab.orders,
+    title: 'Payment Successful 💳',
+    subtitle: 'Payment of Rs.12,999 received for order #12345.',
+    time: DateTime.now().subtract(const Duration(days: 1, hours: 3)), isRead: true,
+  ),
+  _Msg(
+    id: 'o4', tab: _Tab.orders,
+    title: 'Price Drop Alert 📉',
+    subtitle: 'iPhone 15 Pro dropped by 15% — grab it now!',
+    time: DateTime.now().subtract(const Duration(days: 3)), isRead: false,
+  ),
+  _Msg(
+    id: 'c1', tab: _Tab.chats,
+    title: 'Seller: TechZone PK',
+    subtitle: 'Your item will be dispatched by tomorrow morning.',
+    time: DateTime.now().subtract(const Duration(hours: 1)), isRead: false,
+  ),
+  _Msg(
+    id: 'c2', tab: _Tab.chats,
+    title: 'Cartza Support',
+    subtitle: 'Hi! How can we help you today? 😊',
+    time: DateTime.now().subtract(const Duration(hours: 6)), isRead: false,
+  ),
+  _Msg(
+    id: 'c3', tab: _Tab.chats,
+    title: 'Seller: BeautyHub',
+    subtitle: 'Thank you for your purchase! Enjoy your product 💄',
+    time: DateTime.now().subtract(const Duration(days: 2)), isRead: true,
+  ),
+];
+
+// ─── MessagesPage ─────────────────────────────────────────────
+class MessagesPage extends StatefulWidget {
+  const MessagesPage({Key? key}) : super(key: key);
 
   @override
-  State<NotificationsPage> createState() => _NotificationsPageState();
+  State<MessagesPage> createState() => _MessagesPageState();
 }
 
-class _NotificationsPageState extends State<NotificationsPage> {
-  List<NotificationItem> notifications = [
-    NotificationItem(
-      id: '1',
-      title: 'Order Shipped',
-      message: 'Your order #12345 has been shipped and will arrive in 2-3 days.',
-      type: NotificationType.delivery,
-      timestamp: DateTime.now().subtract(const Duration(hours: 2)),
-      isRead: false,
-      routeName: '/orderTracking',
-      routeArguments: {'orderId': '12345'},
-    ),
-    NotificationItem(
-      id: '2',
-      title: '50% OFF Flash Sale',
-      message: 'Limited time offer! Get 50% off on selected items. Shop now!',
-      type: NotificationType.promotion,
-      timestamp: DateTime.now().subtract(const Duration(hours: 5)),
-      isRead: false,
-      routeName: '/home',
-    ),
-    NotificationItem(
-      id: '3',
-      title: 'Order Delivered',
-      message: 'Your order #12340 has been successfully delivered. Rate your experience!',
-      type: NotificationType.order,
-      timestamp: DateTime.now().subtract(const Duration(days: 1)),
-      isRead: true,
-      routeName: '/orders',
-    ),
-    NotificationItem(
-      id: '4',
-      title: 'Payment Successful',
-      message: 'Payment of ₹12,999 received for order #12345.',
-      type: NotificationType.payment,
-      timestamp: DateTime.now().subtract(const Duration(days: 1, hours: 3)),
-      isRead: true,
-      routeName: '/paymentHistory',
-    ),
-    NotificationItem(
-      id: '5',
-      title: 'Item Back in Stock',
-      message: 'Good news! Samsung Galaxy S24 from your wishlist is now available.',
-      type: NotificationType.wishlist,
-      timestamp: DateTime.now().subtract(const Duration(days: 2)),
-      isRead: true,
-      routeName: '/wishlist',
-    ),
-    NotificationItem(
-      id: '6',
-      title: 'Price Drop Alert',
-      message: 'The price of iPhone 15 Pro has dropped by 15%. Check it out now!',
-      type: NotificationType.priceAlert,
-      timestamp: DateTime.now().subtract(const Duration(days: 2, hours: 5)),
-      isRead: false,
-      routeName: '/productDetail',
-      routeArguments: {'productId': 'iphone-15-pro'},
-    ),
-    NotificationItem(
-      id: '7',
-      title: 'Review Reminder',
-      message: 'How was your recent purchase? Share your feedback and help others.',
-      type: NotificationType.review,
-      timestamp: DateTime.now().subtract(const Duration(days: 3)),
-      isRead: true,
-      routeName: '/reviews',
-    ),
-    NotificationItem(
-      id: '8',
-      title: 'Shipping Address Updated',
-      message: 'Your default shipping address has been successfully updated.',
-      type: NotificationType.shipping,
-      timestamp: DateTime.now().subtract(const Duration(days: 4)),
-      isRead: true,
-      routeName: '/shippingAddress',
-    ),
-  ];
+class _MessagesPageState extends State<MessagesPage>
+    with SingleTickerProviderStateMixin {
+  late TabController _tabCtrl;
+  late List<_Msg> _msgs;
 
-  String selectedFilter = 'All';
-  final List<String> filters = [
-    'All',
-    'Orders',
-    'Promotions',
-    'Delivery',
-    'Wishlist',
-    'Payments'
-  ];
-
-  List<NotificationItem> get filteredNotifications {
-    if (selectedFilter == 'All') return notifications;
-
-    NotificationType? type;
-    switch (selectedFilter) {
-      case 'Orders':
-        type = NotificationType.order;
-        break;
-      case 'Promotions':
-        type = NotificationType.promotion;
-        break;
-      case 'Delivery':
-        type = NotificationType.delivery;
-        break;
-      case 'Payments':
-        type = NotificationType.payment;
-        break;
-      case 'Wishlist':
-        type = NotificationType.wishlist;
-        break;
-    }
-
-    return notifications.where((n) => n.type == type).toList();
+  @override
+  void initState() {
+    super.initState();
+    _msgs = List.from(_sampleMessages);
+    _tabCtrl = TabController(length: 4, vsync: this);
+    _tabCtrl.addListener(() => setState(() {}));
   }
 
-  int get unreadCount => notifications.where((n) => !n.isRead).length;
+  @override
+  void dispose() {
+    _tabCtrl.dispose();
+    super.dispose();
+  }
 
-  void markAsRead(String id) {
+  List<_Msg> _forTab(_Tab t) => _msgs.where((m) => m.tab == t).toList();
+
+  int _unreadCount(_Tab t) => _msgs.where((m) => m.tab == t && !m.isRead).length;
+  int get _totalUnread => _msgs.where((m) => !m.isRead).length;
+
+  void _markAllRead(_Tab t) {
     setState(() {
-      final index = notifications.indexWhere((n) => n.id == id);
-      if (index != -1) {
-        notifications[index] = notifications[index].copyWith(isRead: true);
+      for (final m in _msgs) {
+        if (m.tab == t) m.isRead = true;
       }
     });
-  }
-
-  void markAllAsRead() {
-    setState(() {
-      notifications =
-          notifications.map((n) => n.copyWith(isRead: true)).toList();
-    });
+    HapticFeedback.lightImpact();
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: const Text('All notifications marked as read'),
-        backgroundColor: const Color(0xFF4CAF50),
+        content: const Text('All marked as read'),
+        backgroundColor: _C.green,
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        margin: const EdgeInsets.all(16),
+        duration: const Duration(seconds: 2),
       ),
     );
   }
 
-  void deleteNotification(String id) {
-    setState(() {
-      notifications.removeWhere((n) => n.id == id);
-    });
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: const Text('Notification deleted'),
-        backgroundColor: const Color(0xFFFF6F00),
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      ),
-    );
+  void _delete(String id) {
+    setState(() => _msgs.removeWhere((m) => m.id == id));
+    HapticFeedback.mediumImpact();
   }
 
-  void clearAll() {
-    showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Text(
-          'Clear All Notifications',
-          style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF212121)),
-        ),
-        content: const Text(
-          'Are you sure you want to delete all notifications? This action cannot be undone.',
-          style: TextStyle(color: Color(0xFF212121)),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: const Text('Cancel', style: TextStyle(color: Color(0xFF212121))),
-          ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFFFF6F00),
-              foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
-            ),
-            onPressed: () {
-              setState(() {
-                notifications.clear();
-              });
-              Navigator.pop(ctx);
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: const Text('All notifications cleared'),
-                  backgroundColor: const Color(0xFF4CAF50),
-                  behavior: SnackBarBehavior.floating,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
-              );
-            },
-            child: const Text('Clear All'),
+  void _markRead(String id) {
+    setState(() {
+      final idx = _msgs.indexWhere((m) => m.id == id);
+      if (idx != -1) _msgs[idx].isRead = true;
+    });
+  }
+
+  // ─── Bottom navigation bar for mobile ─────────────────────────
+  Widget _buildBottomNavBar() {
+    return Container(
+      decoration: BoxDecoration(
+        color: _C.white,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.08),
+            blurRadius: 12,
+            offset: const Offset(0, -2),
           ),
         ],
       ),
-    );
-  }
-
-  void handleNotificationTap(NotificationItem notification) {
-    markAsRead(notification.id);
-
-    if (notification.routeName != null) {
-      // Navigate to the specific route
-      Navigator.pushNamed(
-        context,
-        notification.routeName!,
-        arguments: notification.routeArguments,
-      ).catchError((error) {
-        // Handle route not found error
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Page not available: ${notification.routeName}'),
-            backgroundColor: const Color(0xFFFF6F00),
-            behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-            ),
-          ),
-        );
-        return null;
-      });
-    } else {
-      // Show notification details if no route specified
-      showDialog(
-        context: context,
-        builder: (ctx) => AlertDialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-          title: Row(
-            children: [
-              Icon(
-                getIconForType(notification.type),
-                color: getColorForType(notification.type),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Text(
-                  notification.title,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF212121),
-                  ),
+      child: SafeArea(
+        top: false,
+        child: NavigationBar(
+          height: 62,
+          selectedIndex: 3, // Messages = Alerts tab
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          indicatorColor: _C.green.withOpacity(0.12),
+          labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
+          onDestinationSelected: (i) {
+            // In a real app you'd navigate to the respective pages.
+            // Here we just pop or show a toast for demo.
+            if (i == 2) {
+              // My Cart – you can implement navigation
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('Navigate to Cart (integrate with main app)'),
+                  duration: Duration(seconds: 1),
                 ),
-              ),
-            ],
-          ),
-          content: Text(
-            notification.message,
-            style: const TextStyle(color: Color(0xFF212121)),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(ctx),
-              child: const Text(
-                'Close',
-                style: TextStyle(color: Color(0xFFFF6F00)),
-              ),
+              );
+            } else if (i != 3) {
+              Navigator.maybePop(context);
+            }
+          },
+          destinations: const [
+            NavigationDestination(
+              icon: Icon(Icons.home_outlined),
+              selectedIcon: Icon(Icons.home_rounded, color: _C.green),
+              label: 'Home',
+            ),
+            NavigationDestination(
+              icon: Icon(Icons.grid_view_outlined),
+              selectedIcon: Icon(Icons.grid_view_rounded, color: _C.green),
+              label: 'Categories',
+            ),
+            NavigationDestination(
+              icon: Icon(Icons.shopping_cart_outlined),
+              selectedIcon: Icon(Icons.shopping_cart_rounded, color: _C.green),
+              label: 'My Cart',
+            ),
+            NavigationDestination(
+              icon: Icon(Icons.notifications_outlined),
+              selectedIcon: Icon(Icons.notifications_rounded, color: _C.green),
+              label: 'Alerts',
+            ),
+            NavigationDestination(
+              icon: Icon(Icons.person_outline_rounded),
+              selectedIcon: Icon(Icons.person_rounded, color: _C.green),
+              label: 'Profile',
             ),
           ],
         ),
-      );
-    }
-  }
-
-  IconData getIconForType(NotificationType type) {
-    switch (type) {
-      case NotificationType.order:
-        return Icons.shopping_bag_outlined;
-      case NotificationType.promotion:
-        return Icons.local_offer_outlined;
-      case NotificationType.delivery:
-        return Icons.local_shipping_outlined;
-      case NotificationType.payment:
-        return Icons.payment_outlined;
-      case NotificationType.wishlist:
-        return Icons.favorite_border;
-      case NotificationType.shipping:
-        return Icons.location_on_outlined;
-      case NotificationType.review:
-        return Icons.rate_review_outlined;
-      case NotificationType.priceAlert:
-        return Icons.trending_down;
-      case NotificationType.general:
-        return Icons.info_outline;
-    }
-  }
-
-  Color getColorForType(NotificationType type) {
-    switch (type) {
-      case NotificationType.order:
-        return const Color(0xFF4CAF50);
-      case NotificationType.promotion:
-        return const Color(0xFFFF6F00);
-      case NotificationType.delivery:
-        return const Color(0xFF4CAF50);
-      case NotificationType.payment:
-        return const Color(0xFF2196F3);
-      case NotificationType.wishlist:
-        return const Color(0xFFE91E63);
-      case NotificationType.shipping:
-        return const Color(0xFF9C27B0);
-      case NotificationType.review:
-        return const Color(0xFFFFC107);
-      case NotificationType.priceAlert:
-        return const Color(0xFFFF5722);
-      case NotificationType.general:
-        return const Color(0xFF212121);
-    }
-  }
-
-  String getTimeAgo(DateTime timestamp) {
-    final now = DateTime.now();
-    final diff = now.difference(timestamp);
-
-    if (diff.inDays > 7) {
-      return '${timestamp.day}/${timestamp.month}/${timestamp.year}';
-    } else if (diff.inDays > 0) {
-      return '${diff.inDays}d ago';
-    } else if (diff.inHours > 0) {
-      return '${diff.inHours}h ago';
-    } else if (diff.inMinutes > 0) {
-      return '${diff.inMinutes}m ago';
-    } else {
-      return 'Just now';
-    }
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        elevation: 0.5,
-        backgroundColor: Colors.white,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Color(0xFF212121)),
-          onPressed: () => Navigator.pop(context),
-        ),
-        title: const Text(
-          'Notifications',
-          style: TextStyle(
-            color: Color(0xFF212121),
-            fontWeight: FontWeight.bold,
-            fontSize: 20,
-          ),
-        ),
-        actions: [
-          if (unreadCount > 0)
-            TextButton.icon(
-              onPressed: markAllAsRead,
-              icon: const Icon(Icons.done_all, size: 18),
-              label: const Text('Mark all'),
-              style: TextButton.styleFrom(
-                foregroundColor: const Color(0xFFFF6F00),
-              ),
-            ),
-          PopupMenuButton(
-            icon: const Icon(Icons.more_vert, color: Color(0xFF212121)),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-            itemBuilder: (ctx) => [
-              const PopupMenuItem(
-                value: 'settings',
-                child: Row(
-                  children: [
-                    Icon(Icons.settings_outlined, size: 20),
-                    SizedBox(width: 12),
-                    Text('Notification Settings'),
-                  ],
-                ),
-              ),
-              const PopupMenuItem(
-                value: 'clear',
-                child: Row(
-                  children: [
-                    Icon(Icons.delete_outline, size: 20, color: Color(0xFFFF6F00)),
-                    SizedBox(width: 12),
-                    Text(
-                      'Clear all',
-                      style: TextStyle(color: Color(0xFFFF6F00)),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-            onSelected: (value) {
-              if (value == 'clear') {
-                clearAll();
-              } else if (value == 'settings') {
-                Navigator.pushNamed(context, '/notificationSettings')
-                    .catchError((e) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Settings page not available')),
-                  );
-                  return null;
-                });
-              }
-            },
-          ),
-        ],
-      ),
-      body: Column(
-        children: [
-          // Unread notification banner
-          if (unreadCount > 0)
+    final mob = _BP.isMob(context);
+    final currentTab = _Tab.values[_tabCtrl.index];
+    final unread = _unreadCount(currentTab);
+
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: SystemUiOverlayStyle.dark.copyWith(statusBarColor: Colors.transparent),
+      child: Scaffold(
+        backgroundColor: _C.bg,
+        appBar: _buildAppBar(currentTab, unread),
+        body: Column(
+          children: [
+            // Tab icon row (centered)
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              decoration: BoxDecoration(
-                color: const Color(0xFFFF6F00).withValues(alpha: 0.1),
-                border: Border(
-                  bottom: BorderSide(
-                    color: const Color(0xFFFF6F00).withValues(alpha: 0.2),
+              color: _C.white,
+              width: double.infinity,
+              child: Center(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: _BP.maxW),
+                  child: _buildTabIconRow(mob),
+                ),
+              ),
+            ),
+            // Tab content
+            Expanded(
+              child: TabBarView(
+                controller: _tabCtrl,
+                children: _Tab.values.map((t) => _TabBody(
+                  key: ValueKey(t),
+                  tab: t,
+                  messages: _forTab(t),
+                  onDelete: _delete,
+                  onRead: _markRead,
+                  isMobile: mob,
+                )).toList(),
+              ),
+            ),
+            // Footer – only on desktop
+            if (!mob) _buildFooter(),
+          ],
+        ),
+        // Bottom navigation bar – only on mobile
+        bottomNavigationBar: mob ? _buildBottomNavBar() : null,
+      ),
+    );
+  }
+
+  // ── AppBar ───────────────────────────────────────────────────
+  PreferredSizeWidget _buildAppBar(_Tab currentTab, int unread) {
+    return PreferredSize(
+      preferredSize: const Size.fromHeight(58),
+      child: Container(
+        color: _C.white,
+        child: Column(
+          children: [
+            Expanded(
+              child: Center(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: _BP.maxW),
+                  child: SafeArea(
+                    bottom: false,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 4),
+                      child: Row(
+                        children: [
+                          IconButton(
+                            icon: const Icon(Icons.arrow_back_ios_new_rounded,
+                                color: _C.dark, size: 20),
+                            onPressed: () => Navigator.pop(context),
+                          ),
+                          Row(
+                            children: [
+                              const Text(
+                                'Messages',
+                                style: TextStyle(
+                                  color: _C.dark,
+                                  fontWeight: FontWeight.w800,
+                                  fontSize: 20,
+                                  letterSpacing: -0.3,
+                                ),
+                              ),
+                              if (_totalUnread > 0) ...[
+                                const SizedBox(width: 8),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 7, vertical: 2),
+                                  decoration: BoxDecoration(
+                                    color: _C.red,
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                  child: Text(
+                                    '$_totalUnread',
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 11,
+                                      fontWeight: FontWeight.w800,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ],
+                          ),
+                          const Spacer(),
+                          if (unread > 0)
+                            TextButton.icon(
+                              onPressed: () =>
+                                  _markAllRead(_Tab.values[_tabCtrl.index]),
+                              icon: const Icon(Icons.done_all_rounded, size: 16),
+                              label: const Text('Mark all read',
+                                  style: TextStyle(fontSize: 12)),
+                              style: TextButton.styleFrom(
+                                  foregroundColor: _C.orange),
+                            ),
+                          const SizedBox(width: 4),
+                        ],
+                      ),
+                    ),
                   ),
                 ),
               ),
-              child: Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(6),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFFF6F00),
-                      borderRadius: BorderRadius.circular(6),
-                    ),
-                    child: const Icon(
-                      Icons.notifications_active,
-                      size: 16,
-                      color: Colors.white,
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Text(
-                    '$unreadCount new notification${unreadCount > 1 ? 's' : ''}',
-                    style: const TextStyle(
-                      color: Color(0xFFFF6F00),
-                      fontWeight: FontWeight.w600,
-                      fontSize: 14,
-                    ),
-                  ),
-                ],
-              ),
             ),
+            Container(height: 0.5, color: _C.greyL),
+          ],
+        ),
+      ),
+    );
+  }
 
-          // Filter chips
-          Container(
-            height: 60,
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              itemCount: filters.length,
-              itemBuilder: (ctx, i) {
-                final isSelected = filters[i] == selectedFilter;
-                return Padding(
-                  padding: const EdgeInsets.only(right: 8),
-                  child: FilterChip(
-                    label: Text(filters[i]),
-                    selected: isSelected,
-                    onSelected: (selected) {
-                      setState(() {
-                        selectedFilter = filters[i];
-                      });
-                    },
-                    backgroundColor: Colors.white,
-                    selectedColor: const Color(0xFFFF6F00).withValues(alpha: 0.15),
-                    checkmarkColor: const Color(0xFFFF6F00),
-                    side: BorderSide(
-                      color: isSelected
-                          ? const Color(0xFFFF6F00)
-                          : Colors.grey.shade300,
-                      width: 1.5,
+  // ── Tab Icon Row ─────────────────────────────────────────────
+  Widget _buildTabIconRow(bool mob) {
+    return Padding(
+      padding: EdgeInsets.symmetric(
+        horizontal: _BP.hp(context),
+        vertical: mob ? 12 : 16,
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: _Tab.values.map((t) {
+          final isSelected = _tabCtrl.index == t.index;
+          final unread = _unreadCount(t);
+          return mob
+              ? _MobileTabIcon(
+            tab: t,
+            isSelected: isSelected,
+            unread: unread,
+            onTap: () {
+              HapticFeedback.selectionClick();
+              _tabCtrl.animateTo(t.index);
+            },
+          )
+              : _DesktopTabPill(
+            tab: t,
+            isSelected: isSelected,
+            unread: unread,
+            onTap: () {
+              HapticFeedback.selectionClick();
+              _tabCtrl.animateTo(t.index);
+            },
+          );
+        }).toList(),
+      ),
+    );
+  }
+
+  // ── Footer (Desktop only) ────────────────────────────────────
+  Widget _buildFooter() {
+    return Container(
+      color: const Color(0xFF1A1A1A),
+      width: double.infinity,
+      child: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: _BP.maxW),
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(24, 28, 24, 0),
+            child: Column(
+              children: [
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      flex: 2,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 10, vertical: 5),
+                            decoration: BoxDecoration(
+                                color: _C.green,
+                                borderRadius: BorderRadius.circular(8)),
+                            child: const Text('CARTZA',
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w900,
+                                    fontSize: 16,
+                                    letterSpacing: 1.5)),
+                          ),
+                          const SizedBox(height: 10),
+                          const Text(
+                            'Your trusted online shopping\ndestination for quality products.',
+                            style: TextStyle(
+                                color: Colors.white60,
+                                fontSize: 12,
+                                height: 1.6),
+                          ),
+                          const SizedBox(height: 14),
+                          Row(children: [
+                            _SI(Icons.facebook, const Color(0xFF1877F2)),
+                            _SI(Icons.chat, const Color(0xFF25D366)),
+                            _SI(Icons.camera_alt, const Color(0xFFE4405F)),
+                            _SI(Icons.play_arrow, const Color(0xFFFF0000)),
+                          ]),
+                        ],
+                      ),
                     ),
-                    labelStyle: TextStyle(
-                      color: isSelected
-                          ? const Color(0xFFFF6F00)
-                          : const Color(0xFF212121),
-                      fontWeight:
-                      isSelected ? FontWeight.bold : FontWeight.normal,
-                    ),
+                    const SizedBox(width: 24),
+                    Expanded(
+                        child: _FC('Shop', [
+                          'New Arrivals',
+                          'Best Sellers',
+                          'Flash Sale',
+                          'Categories',
+                          'Deals'
+                        ])),
+                    Expanded(
+                        child: _FC('Customer Care', [
+                          'Contact Us',
+                          'Help Center',
+                          'Track Order',
+                          'Returns',
+                          'Shipping'
+                        ])),
+                    Expanded(
+                        child: _FC('Company',
+                            ['About Us', 'Careers', 'Privacy', 'Terms'])),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                Container(height: 0.5, color: _C.green.withOpacity(0.3)),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Flexible(
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(Icons.copyright,
+                                color: Colors.white38, size: 12),
+                            SizedBox(width: 4),
+                            Flexible(
+                              child: Text(
+                                '2025 Cartza. All rights reserved.',
+                                style: TextStyle(
+                                    color: Colors.white60, fontSize: 11),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Row(children: [
+                        const Text('We Accept: ',
+                            style: TextStyle(
+                                color: Colors.white60, fontSize: 11)),
+                        ...[
+                          Icons.credit_card,
+                          Icons.account_balance_wallet,
+                          Icons.payment
+                        ].map((ic) => Padding(
+                            padding: const EdgeInsets.only(left: 6),
+                            child: Container(
+                              padding: const EdgeInsets.all(5),
+                              decoration: BoxDecoration(
+                                  color: Colors.white.withOpacity(0.07),
+                                  borderRadius: BorderRadius.circular(4),
+                                  border: Border.all(color: Colors.white24)),
+                              child: Icon(ic,
+                                  color: Colors.white54, size: 13),
+                            ))),
+                      ]),
+                    ],
                   ),
-                );
-              },
+                ),
+              ],
             ),
           ),
+        ),
+      ),
+    );
+  }
+}
 
-          // Notification list
-          Expanded(
-            child: filteredNotifications.isEmpty
-                ? Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.notifications_none,
-                    size: 80,
-                    color: Colors.grey.shade300,
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    'No notifications',
-                    style: TextStyle(
-                      fontSize: 18,
-                      color: Colors.grey.shade600,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'You\'re all caught up!',
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.grey.shade500,
-                    ),
-                  ),
-                ],
+// ─── Mobile Tab Icon ─────────────────────────────────────────
+class _MobileTabIcon extends StatelessWidget {
+  final _Tab tab;
+  final bool isSelected;
+  final int unread;
+  final VoidCallback onTap;
+  const _MobileTabIcon({
+    required this.tab,
+    required this.isSelected,
+    required this.unread,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Stack(
+            clipBehavior: Clip.none,
+            children: [
+              AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
+                width: 52,
+                height: 52,
+                decoration: BoxDecoration(
+                  color: isSelected ? tab.color : _C.greyL,
+                  shape: BoxShape.circle,
+                  boxShadow: isSelected
+                      ? [
+                    BoxShadow(
+                      color: tab.color.withOpacity(0.35),
+                      blurRadius: 12,
+                      offset: const Offset(0, 4),
+                    )
+                  ]
+                      : null,
+                ),
+                child: Icon(
+                  tab.icon,
+                  color: isSelected ? Colors.white : _C.grey,
+                  size: 24,
+                ),
               ),
-            )
-                : ListView.builder(
-              padding: const EdgeInsets.symmetric(vertical: 8),
-              itemCount: filteredNotifications.length,
-              itemBuilder: (ctx, i) {
-                final notification = filteredNotifications[i];
-                return Dismissible(
-                  key: Key(notification.id),
-                  direction: DismissDirection.endToStart,
-                  background: Container(
-                    color: const Color(0xFFFF6F00),
-                    alignment: Alignment.centerRight,
-                    padding: const EdgeInsets.only(right: 20),
-                    child: const Icon(
-                      Icons.delete_outline,
-                      color: Colors.white,
-                      size: 28,
+              if (unread > 0)
+                Positioned(
+                  top: -2,
+                  right: -2,
+                  child: Container(
+                    padding: const EdgeInsets.all(4),
+                    decoration: const BoxDecoration(
+                      color: _C.red,
+                      shape: BoxShape.circle,
+                    ),
+                    child: Text(
+                      '$unread',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 9,
+                        fontWeight: FontWeight.w800,
+                      ),
                     ),
                   ),
-                  onDismissed: (_) => deleteNotification(notification.id),
-                  child: NotificationCard(
-                    notification: notification,
-                    onTap: () => handleNotificationTap(notification),
-                    getIcon: getIconForType,
-                    getColor: getColorForType,
-                    getTimeAgo: getTimeAgo,
-                  ),
-                );
-              },
+                ),
+            ],
+          ),
+          const SizedBox(height: 5),
+          Text(
+            tab.label,
+            style: TextStyle(
+              fontSize: 11,
+              fontWeight: isSelected ? FontWeight.w700 : FontWeight.w400,
+              color: isSelected ? tab.color : _C.grey,
             ),
           ),
         ],
@@ -612,142 +699,618 @@ class _NotificationsPageState extends State<NotificationsPage> {
   }
 }
 
-class NotificationCard extends StatelessWidget {
-  final NotificationItem notification;
+// ─── Desktop Tab Pill ─────────────────────────────────────────
+class _DesktopTabPill extends StatelessWidget {
+  final _Tab tab;
+  final bool isSelected;
+  final int unread;
   final VoidCallback onTap;
-  final IconData Function(NotificationType) getIcon;
-  final Color Function(NotificationType) getColor;
-  final String Function(DateTime) getTimeAgo;
-
-  const NotificationCard({
-    Key? key,
-    required this.notification,
+  const _DesktopTabPill({
+    required this.tab,
+    required this.isSelected,
+    required this.unread,
     required this.onTap,
-    required this.getIcon,
-    required this.getColor,
-    required this.getTimeAgo,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
+        decoration: BoxDecoration(
+          color: isSelected ? tab.color : Colors.transparent,
+          borderRadius: BorderRadius.circular(30),
+          border: Border.all(
+            color: isSelected ? tab.color : _C.greyL,
+            width: 1.5,
+          ),
+          boxShadow: isSelected
+              ? [
+            BoxShadow(
+              color: tab.color.withOpacity(0.25),
+              blurRadius: 10,
+              offset: const Offset(0, 3),
+            )
+          ]
+              : null,
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              tab.icon,
+              color: isSelected ? Colors.white : _C.grey,
+              size: 20,
+            ),
+            const SizedBox(width: 8),
+            Text(
+              tab.label,
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                color: isSelected ? Colors.white : _C.grey,
+              ),
+            ),
+            if (unread > 0) ...[
+              const SizedBox(width: 8),
+              Container(
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 7, vertical: 2),
+                decoration: BoxDecoration(
+                  color: isSelected
+                      ? Colors.white.withOpacity(0.3)
+                      : _C.red,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Text(
+                  '$unread',
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 10,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ─── Tab Body ────────────────────────────────────────────────
+class _TabBody extends StatelessWidget {
+  final _Tab tab;
+  final List<_Msg> messages;
+  final void Function(String) onDelete;
+  final void Function(String) onRead;
+  final bool isMobile;
+
+  const _TabBody({
+    Key? key,
+    required this.tab,
+    required this.messages,
+    required this.onDelete,
+    required this.onRead,
+    required this.isMobile,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final color = getColor(notification.type);
+    if (messages.isEmpty) return _EmptyState(tab: tab);
 
-    return InkWell(
-      onTap: onTap,
-      child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-        padding: const EdgeInsets.all(14),
-        decoration: BoxDecoration(
-          color: notification.isRead
-              ? Colors.white
-              : const Color(0xFFFF6F00).withValues(alpha: 0.05),
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color: notification.isRead
-                ? Colors.grey.shade200
-                : const Color(0xFFFF6F00).withValues(alpha: 0.2),
-            width: 1,
-          ),
-          boxShadow: [
-            if (!notification.isRead)
-              BoxShadow(
-                color: const Color(0xFFFF6F00).withValues(alpha: 0.1),
-                blurRadius: 8,
-                offset: const Offset(0, 2),
-              ),
-          ],
-        ),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: color.withValues(alpha: 0.15),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Icon(
-                getIcon(notification.type),
-                color: color,
-                size: 24,
+    final recent = messages
+        .where((m) => DateTime.now().difference(m.time).inDays < 7)
+        .toList();
+    final older = messages
+        .where((m) => DateTime.now().difference(m.time).inDays >= 7)
+        .toList();
+
+    return ListView(
+      physics: const BouncingScrollPhysics(),
+      padding: const EdgeInsets.only(bottom: 24),
+      children: [
+        if (recent.isNotEmpty) ...[
+          _CenteredSection(child: _SectionLabel('Last 7 days')),
+          ...recent.asMap().entries.map((e) => _AnimatedEntry(
+            delay: Duration(milliseconds: e.key * 50),
+            child: _CenteredSection(
+              child: _MsgCard(
+                msg: e.value,
+                isMobile: isMobile,
+                onDelete: () => onDelete(e.value.id),
+                onTap: () => onRead(e.value.id),
               ),
             ),
-            const SizedBox(width: 14),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          notification.title,
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: notification.isRead
-                                ? FontWeight.w600
-                                : FontWeight.bold,
-                            color: const Color(0xFF212121),
-                          ),
-                        ),
-                      ),
-                      if (!notification.isRead) ...[
-                        const SizedBox(width: 8),
-                        Container(
-                          width: 10,
-                          height: 10,
-                          decoration: const BoxDecoration(
-                            color: Color(0xFFFF6F00),
-                            shape: BoxShape.circle,
-                          ),
-                        ),
-                      ],
-                    ],
-                  ),
-                  const SizedBox(height: 6),
-                  Text(
-                    notification.message,
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.grey.shade700,
-                      height: 1.4,
-                    ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  const SizedBox(height: 8),
-                  Row(
-                    children: [
-                      Icon(
-                        Icons.access_time,
-                        size: 14,
-                        color: Colors.grey.shade500,
-                      ),
-                      const SizedBox(width: 4),
-                      Text(
-                        getTimeAgo(notification.timestamp),
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Colors.grey.shade500,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      if (notification.routeName != null) ...[
-                        const SizedBox(width: 12),
-                        Icon(
-                          Icons.arrow_forward_ios,
-                          size: 12,
-                          color: Colors.grey.shade400,
-                        ),
-                      ],
-                    ],
-                  ),
-                ],
-              ),
+          )),
+        ],
+        if (older.isNotEmpty) ...[
+          _CenteredSection(child: _SectionLabel('Older')),
+          ...older.map((m) => _CenteredSection(
+            child: _MsgCard(
+              msg: m,
+              isMobile: isMobile,
+              onDelete: () => onDelete(m.id),
+              onTap: () => onRead(m.id),
             ),
-          ],
+          )),
+        ],
+      ],
+    );
+  }
+}
+
+// ─── Centralised section wrapper ─────────────────────────────
+class _CenteredSection extends StatelessWidget {
+  final Widget child;
+  final Color? bg;
+  const _CenteredSection({required this.child, this.bg});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      color: bg ?? _C.bg,
+      width: double.infinity,
+      child: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: _BP.maxW),
+          child: child,
         ),
       ),
     );
   }
+}
+
+// ─── Section Label ───────────────────────────────────────────
+class _SectionLabel extends StatelessWidget {
+  final String text;
+  const _SectionLabel(this.text);
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 6),
+      child: Text(
+        text,
+        style: const TextStyle(
+          color: _C.grey,
+          fontSize: 12.5,
+          fontWeight: FontWeight.w600,
+          letterSpacing: 0.2,
+        ),
+      ),
+    );
+  }
+}
+
+// ─── Message Card (with fully visible banners) ───────────────
+class _MsgCard extends StatefulWidget {
+  final _Msg msg;
+  final bool isMobile;
+  final VoidCallback onDelete;
+  final VoidCallback onTap;
+
+  const _MsgCard({
+    required this.msg,
+    required this.isMobile,
+    required this.onDelete,
+    required this.onTap,
+  });
+
+  @override
+  State<_MsgCard> createState() => _MsgCardState();
+}
+
+class _MsgCardState extends State<_MsgCard>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _pressCtrl;
+  late Animation<double> _scale;
+
+  @override
+  void initState() {
+    super.initState();
+    _pressCtrl = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 100),
+    );
+    _scale = Tween(begin: 1.0, end: 0.98)
+        .animate(CurvedAnimation(parent: _pressCtrl, curve: Curves.easeOut));
+  }
+
+  @override
+  void dispose() {
+    _pressCtrl.dispose();
+    super.dispose();
+  }
+
+  String _timeLabel(DateTime t) {
+    final diff = DateTime.now().difference(t);
+    if (diff.inMinutes < 60) return '${diff.inMinutes}m ago';
+    if (diff.inHours < 24) return '${diff.inHours}h ago';
+    if (diff.inDays == 1) return 'Yesterday';
+    return '${t.day}/${t.month}/${t.year}';
+  }
+
+  Color get _tabColor => widget.msg.tab.color;
+  IconData get _tabIcon => widget.msg.tab.icon;
+
+  @override
+  Widget build(BuildContext context) {
+    final msg = widget.msg;
+    final hasBanner = msg.bannerUrl != null;
+    final mob = widget.isMobile;
+    final hMargin = mob ? 12.0 : 16.0;
+
+    return Dismissible(
+        key: Key(msg.id),
+        direction: DismissDirection.endToStart,
+        background: _dismissBg(hMargin),
+        onDismissed: (_) => widget.onDelete(),
+        child: ScaleTransition(
+            scale: _scale,
+            child: GestureDetector(
+                onTapDown: (_) => _pressCtrl.forward(),
+                onTapUp: (_) {
+                  _pressCtrl.reverse();
+                  widget.onTap();
+                },
+                onTapCancel: () => _pressCtrl.reverse(),
+                child: Container(
+                    margin: EdgeInsets.symmetric(horizontal: hMargin, vertical: 5),
+                    decoration: BoxDecoration(
+                      color: _C.white,
+                      borderRadius: BorderRadius.circular(14),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.05),
+                          blurRadius: 8,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                      border: msg.isRead
+                          ? null
+                          : Border.all(
+                        color: _tabColor.withOpacity(0.3),
+                        width: 1,
+                      ),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Header row
+                        Padding(
+                            padding: EdgeInsets.fromLTRB(
+                                14, 12, 14, hasBanner ? 10 : 12),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                            Stack(
+                            children: [
+                            Container(
+                            width: 42,
+                              height: 42,
+                              decoration: BoxDecoration(
+                                color: _tabColor,
+                                shape: BoxShape.circle,
+                              ),
+                              child: Icon(_tabIcon,
+                                  color: Colors.white, size: 20),
+                            ),
+                            if (!msg.isRead)
+                        Positioned(
+                          top: 0,
+                          right: 0,
+                          child: Container(
+                            width: 10,
+                            height: 10,
+                            decoration: BoxDecoration(
+                              color: _C.red,
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                  color: _C.white, width: 1.5),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            msg.title,
+                            style: TextStyle(
+                              fontSize: mob ? 14 : 15,
+                              fontWeight: msg.isRead
+                                  ? FontWeight.w600
+                                  : FontWeight.w800,
+                              color: _C.dark,
+                              height: 1.2,
+                            ),
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            _timeLabel(msg.time),
+                            style: const TextStyle(
+                              fontSize: 11.5,
+                              color: _C.grey,
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    if (!msg.isRead)
+                Container(
+                width: 8,
+                height: 8,
+                  margin: const EdgeInsets.only(top: 4),
+                  decoration: BoxDecoration(
+                    color: _tabColor,
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: _tabColor.withOpacity(0.5),
+                        blurRadius: 4,
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+        ),
+
+        // Banner image section
+        if (hasBanner) ...[
+    ClipRRect(
+    borderRadius: const BorderRadius.only(
+    bottomLeft: Radius.circular(14),
+    bottomRight: Radius.circular(14),
+    ),
+    child: ConstrainedBox(
+    constraints: BoxConstraints(
+    maxHeight: mob ? 200 : 220,
+    ),
+    child: Image.network(
+    msg.bannerUrl!,
+    width: double.infinity,
+    fit: BoxFit.contain,
+    loadingBuilder: (_, child, progress) {
+    if (progress == null) return child;
+    return Container(
+    height: 160,
+    color: _C.greyL,
+    child: Center(
+    child: CircularProgressIndicator(
+    color: _tabColor,
+    strokeWidth: 2,
+    ),
+    ),
+    );
+    },
+    errorBuilder: (_, __, ___) => Container(
+    height: 120,
+    color: _C.greyL,
+    child: Center(
+    child: Icon(Icons.broken_image_outlined,
+    color: _C.grey, size: 40),
+    ),
+    ),
+    ),
+    ),
+    ),
+    Padding(
+    padding: const EdgeInsets.fromLTRB(14, 10, 14, 12),
+    child: Text(
+    msg.subtitle,
+    style: TextStyle(
+    fontSize: mob ? 13 : 14,
+    color: _C.dark,
+    height: 1.4,
+    ),
+    ),
+    ),
+    ] else
+    Padding(
+    padding: const EdgeInsets.fromLTRB(14, 0, 14, 14),
+    child: Row(
+    children: [
+    const SizedBox(width: 54),
+    Expanded(
+    child: Text(
+    msg.subtitle,
+    style: const TextStyle(
+    fontSize: 13,
+    color: _C.grey,
+    height: 1.4,
+    ),
+    maxLines: 2,
+    overflow: TextOverflow.ellipsis,
+    ),
+    ),
+    ],
+    ),
+    ),
+    ],
+    ),
+    ),
+    ),
+    ),
+    );
+  }
+
+  Widget _dismissBg(double hMargin) {
+    return Container(
+      margin: EdgeInsets.symmetric(horizontal: hMargin, vertical: 5),
+      decoration: BoxDecoration(
+        color: _C.red,
+        borderRadius: BorderRadius.circular(14),
+      ),
+      alignment: Alignment.centerRight,
+      padding: const EdgeInsets.only(right: 24),
+      child: const Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.delete_outline_rounded, color: Colors.white, size: 24),
+          SizedBox(height: 4),
+          Text(
+            'Delete',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 11,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ─── Animated entry wrapper ──────────────────────────────────
+class _AnimatedEntry extends StatefulWidget {
+  final Widget child;
+  final Duration delay;
+  const _AnimatedEntry({required this.child, required this.delay});
+
+  @override
+  State<_AnimatedEntry> createState() => _AnimatedEntryState();
+}
+
+class _AnimatedEntryState extends State<_AnimatedEntry>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _ctrl;
+  late Animation<double> _fade;
+  late Animation<Offset> _slide;
+
+  @override
+  void initState() {
+    super.initState();
+    _ctrl = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 400),
+    );
+    _fade = CurvedAnimation(parent: _ctrl, curve: Curves.easeOut);
+    _slide = Tween(begin: const Offset(0, 0.05), end: Offset.zero)
+        .animate(CurvedAnimation(parent: _ctrl, curve: Curves.easeOut));
+
+    Future.delayed(widget.delay, () {
+      if (mounted) _ctrl.forward();
+    });
+  }
+
+  @override
+  void dispose() {
+    _ctrl.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => FadeTransition(
+    opacity: _fade,
+    child: SlideTransition(position: _slide, child: widget.child),
+  );
+}
+
+// ─── Empty State ─────────────────────────────────────────────
+class _EmptyState extends StatelessWidget {
+  final _Tab tab;
+  const _EmptyState({required this.tab});
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            width: 80,
+            height: 80,
+            decoration: BoxDecoration(
+              color: tab.color.withOpacity(0.1),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(tab.icon, color: tab.color, size: 36),
+          ),
+          const SizedBox(height: 16),
+          Text(
+            'No ${tab.label}',
+            style: const TextStyle(
+              fontSize: 17,
+              fontWeight: FontWeight.w700,
+              color: _C.dark,
+            ),
+          ),
+          const SizedBox(height: 6),
+          const Text(
+            'You\'re all caught up!',
+            style: TextStyle(fontSize: 13, color: _C.grey),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ─── Footer helpers ──────────────────────────────────────────
+class _FC extends StatelessWidget {
+  final String title;
+  final List<String> links;
+  const _FC(this.title, this.links);
+
+  @override
+  Widget build(_) => Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Text(title,
+          style: const TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.w700,
+              fontSize: 12.5)),
+      const SizedBox(height: 10),
+      ...links.map((l) => Padding(
+        padding: const EdgeInsets.only(bottom: 7),
+        child: InkWell(
+          onTap: () {},
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(Icons.arrow_right_rounded,
+                  size: 13,
+                  color: _C.green.withOpacity(0.65)),
+              const SizedBox(width: 3),
+              Text(l,
+                  style: const TextStyle(
+                      color: Colors.white60, fontSize: 11.5)),
+            ],
+          ),
+        ),
+      )),
+      const SizedBox(height: 24),
+    ],
+  );
+}
+
+class _SI extends StatelessWidget {
+  final IconData icon;
+  final Color color;
+  const _SI(this.icon, this.color);
+
+  @override
+  Widget build(_) => Padding(
+    padding: const EdgeInsets.only(right: 8),
+    child: InkWell(
+      onTap: () {},
+      child: Container(
+        padding: const EdgeInsets.all(6),
+        decoration: BoxDecoration(
+            color: color, borderRadius: BorderRadius.circular(7)),
+        child: Icon(icon, color: Colors.white, size: 14),
+      ),
+    ),
+  );
 }

@@ -1,29 +1,60 @@
+import 'package:cartza_user/applocalization.dart';
 import 'package:flutter/material.dart';
 import 'login_page.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'appprovider.dart';
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  final provider = AppProvider();
+  await provider.init();  // important — initialise before runApp
 
-void main() {
-  runApp(const CartzaApp());
+  runApp(
+    ChangeNotifierProvider<AppProvider>(
+      create: (_) => provider,
+      child: const CartzaApp(),
+    ),
+  );
 }
 
-class CartzaApp extends StatelessWidget {
+class CartzaApp extends StatefulWidget {
   const CartzaApp({super.key});
+
+  @override
+  State<CartzaApp> createState() => _CartzaAppState();
+}
+
+class _CartzaAppState extends State<CartzaApp> {
+  Locale _locale = const Locale('en'); // default language
+
+  // Function to change language
+  void setLocale(Locale locale) {
+    setState(() {
+      _locale = locale;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: "Cartza",
-      theme: ThemeData(
-        fontFamily: "Roboto",
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFF4CAF50),
-          primary: const Color(0xFF4CAF50),
-          secondary: const Color(0xFFFF6F00),
-        ),
-      ),
 
-      // 🔹 DIRECT LOGIN PAGE
+      // ✅ HOME PAGE (FIXED POSITION)
       home: const ResponsiveLoginPage(role: "User"),
+
+      // ✅ LOCALIZATION
+      locale: _locale,
+      supportedLocales: const [
+        Locale('en'),
+        Locale('ur'),
+      ],
+      localizationsDelegates: const [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
     );
   }
 }
