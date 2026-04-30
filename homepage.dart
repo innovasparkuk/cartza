@@ -65,6 +65,7 @@ class _BP {
   }
 }
 
+// ─── Unsplash image URLs (6 banners) ─────────────────────
 // ─── Helper: wraps a child in Center + ConstrainedBox(maxWidth: 1200)
 // same pattern CartPage uses everywhere
 Widget _centered({required Widget child, EdgeInsets? padding}) {
@@ -102,6 +103,7 @@ class _Img {
   ];
 }
 
+// ─── Categories data (UI strip + grid) ──────────────────────
 // ─── Categories data ──────────────────────────────────────
 final List<Map<String, dynamic>> _categories = [
   {'name': 'Beauty',      'icon': Icons.face_retouching_natural, 'color': Color(0xFFE91E63), 'items': 10, 'from': 10,  'img': _Img.catNet[0]},
@@ -118,6 +120,7 @@ final List<Map<String, dynamic>> _categories = [
   {'name': 'Jewellery',   'icon': Icons.diamond,                 'color': Color(0xFFE91E63), 'items': 6,  'from': 300, 'img': _Img.catNet[11]},
 ];
 
+// ─── Product model using ASSET images from sample_data ───────
 // ─── Product model ────────────────────────────────────────
 class _Prod {
   final String name;
@@ -151,6 +154,132 @@ class _Prod {
   );
 }
 
+// ─── Flash Sale items ──────────────────────────────────────
+const _kFlash = <_Prod>[
+  _Prod(
+    name: 'Tattoo Kits',
+    price: 100,
+    imageAsset: 'assets/images/subcategory_3_4.png',
+    description: 'Complete tattoo kits including ink, needles, and accessories.',
+    category: 'Mehndi & Tattooing',
+    badge: '70% OFF',
+    rating: 4.6,
+    sold: 342,
+  ),
+  _Prod(
+    name: 'Smartphones',
+    price: 300,
+    imageAsset: 'assets/images/subcategory_5_1.png',
+    description: 'Latest smartphones with advanced features and top performance.',
+    category: 'Electronics',
+    badge: 'SALE',
+    rating: 4.7,
+    sold: 510,
+  ),
+  _Prod(
+    name: 'Tattoo Needles',
+    price: 30,
+    imageAsset: 'assets/images/subcategory_3_8.png',
+    description: 'High-quality needles for professional tattoo application.',
+    category: 'Mehndi & Tattooing',
+    badge: '30% OFF',
+    rating: 4.4,
+    sold: 189,
+  ),
+  _Prod(
+    name: 'Eye Liner',
+    price: 18,
+    imageAsset: 'assets/images/subcategory_1_9.png',
+    description: 'Smudge-proof eyeliner for precise application and long-lasting wear.',
+    category: 'Beauty & Cosmetics',
+    badge: 'HOT',
+    rating: 4.5,
+    sold: 231,
+  ),
+  _Prod(
+    name: 'Headphones',
+    price: 50,
+    imageAsset: 'assets/images/subcategory_5_3.png',
+    description: 'Noise-cancelling and wireless headphones for premium sound.',
+    category: 'Electronics',
+    badge: '25% OFF',
+    rating: 4.8,
+    sold: 178,
+  ),
+  _Prod(
+    name: 'Mehndi Cones',
+    price: 5,
+    imageAsset: 'assets/images/subcategory_3_1.png',
+    description: 'Natural henna cones for intricate mehndi designs.',
+    category: 'Mehndi & Tattooing',
+    badge: 'NEW',
+    rating: 4.3,
+    sold: 95,
+  ),
+];
+
+// ─── Recommended items ─────────────────────────────────────
+const _kRec = <_Prod>[
+  _Prod(
+    name: 'Skin Care',
+    price: 25,
+    imageAsset: 'assets/images/subcategory_1_1.png',
+    description: 'Skin care products enriched with natural oils and vitamins for glowing skin.',
+    category: 'Beauty & Cosmetics',
+    badge: 'NEW',
+    rating: 4.6,
+    sold: 87,
+  ),
+  _Prod(
+    name: 'Handmade Jewelry',
+    price: 45,
+    imageAsset: 'assets/images/subcategory_2_1.png',
+    description: 'Unique handmade jewelry crafted with care and creativity.',
+    category: 'Handmade Products',
+    badge: '',
+    rating: 4.3,
+    sold: 145,
+  ),
+  _Prod(
+    name: 'Cricket Bat',
+    price: 35,
+    imageAsset: 'assets/images/subcategory_8_7.png',
+    description: 'Premium cricket bats for practice and matches.',
+    category: 'Sports',
+    badge: 'HOT',
+    rating: 4.5,
+    sold: 312,
+  ),
+  _Prod(
+    name: 'Fiction Books',
+    price: 15,
+    imageAsset: 'assets/images/subcategory_9_1.png',
+    description: 'Engaging fiction books across various genres.',
+    category: 'Books',
+    badge: 'SALE',
+    rating: 4.4,
+    sold: 204,
+  ),
+  _Prod(
+    name: 'Clay Pots',
+    price: 15,
+    imageAsset: 'assets/images/subcategory_2_2.png',
+    description: 'Durable and stylish clay pots for home decoration and gardening.',
+    category: 'Handmade Products',
+    badge: '',
+    rating: 4.7,
+    sold: 67,
+  ),
+  _Prod(
+    name: 'Kids Clothing',
+    price: 25,
+    imageAsset: 'assets/images/subcategory_4_2.png',
+    description: 'Comfortable and stylish clothing for children of all ages.',
+    category: 'Kids',
+    badge: 'NEW',
+    rating: 4.8,
+    sold: 198,
+  ),
 const _kFlash = <_Prod>[
   _Prod(name: 'Tattoo Kits',    price: 100, imageAsset: 'assets/images/subcategory_3_4.png', description: 'Complete tattoo kits including ink, needles, and accessories.', category: 'Mehndi & Tattooing',  badge: '70% OFF', rating: 4.6, sold: 342),
   _Prod(name: 'Smartphones',    price: 300, imageAsset: 'assets/images/subcategory_5_1.png', description: 'Latest smartphones with advanced features and top performance.',  category: 'Electronics',          badge: 'SALE',    rating: 4.7, sold: 510),
@@ -282,128 +411,36 @@ class _HomepageState extends State<Homepage> {
     );
   }
 
-  // ══════════════════════════════════════════════════════════
-  // BODY — CustomScrollView so each section can have its own
-  // full-width background while content is centered at maxW
-  // Matches the CartPage approach exactly.
-  // ══════════════════════════════════════════════════════════
+  // ── Body ────────────────────────────────────────────────────
   Widget _buildBody(BuildContext ctx, bool mobile) {
-    final isDesk = _BP.isDesk(ctx);
-
-    // Helper: wrap a widget in a SliverToBoxAdapter with a
-    // full-width colored background and centered content
-    SliverToBoxAdapter _section({
-      required Widget child,
-      Color bg = _C.bg,
-    }) {
-      return SliverToBoxAdapter(
-        child: Container(
-          color: bg,
-          width: double.infinity,
-          child: Center(
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: _BP.maxW),
-              child: child,
-            ),
-          ),
-        ),
-      );
-    }
-
-    return CustomScrollView(
+    return SingleChildScrollView(
       physics: const ClampingScrollPhysics(),
-      slivers: [
-        // ── Delivery strip (full-width green tint bg)
-        _section(
-          bg: const Color(0xFFF0F8F0),
-          child: _DeliveryStrip(),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+        _DeliveryStrip(),
+        mobile ? _MobileBanner() : _DesktopHeroRow(onCat: _goToCategory),
+        _FilterChips(),
+        _HomeCatSection(onCatTap: _goToCategory),
+        _FlashHeader(onSeeAll: _showFlashSalePage),
+        _HList(
+          items: _kFlash,
+          onAdd: () => setState(() {}),
+          onTap: _goToProduct,
         ),
-        // ── Banner hero
-        _section(
-          bg: _C.white,
-          child: mobile
-              ? _MobileBanner()
-              : _DesktopHeroRow(onCat: _goToCategory),
+        if (!_BP.isMob(ctx))
+          _PromoBanners(onSell: () => Navigator.pushNamed(ctx, '/seller').catchError((_) {})),
+        _SectionHead(title: 'Recommended for You', onAction: _showRecommendPage),
+        _ProdGrid(
+          items: _kRec,
+          onAdd: () => setState(() {}),
+          onTap: _goToProduct,
         ),
-        // ── Filter chips
-        _section(
-          bg: _C.white,
-          child: _FilterChips(),
-        ),
-        // ── 1px divider
-        SliverToBoxAdapter(child: Container(height: 1, color: const Color(0xFFF0F0F0))),
-        // ── Categories section
-        _section(
-          bg: _C.white,
-          child: _HomeCatSection(onCatTap: _goToCategory),
-        ),
-        // ── Gap
-        SliverToBoxAdapter(child: Container(height: 10, color: _C.bg)),
-        // ── Flash sale header
-        _section(
-          bg: _C.bg,
-          child: _FlashHeader(onSeeAll: _showFlashSalePage),
-        ),
-        // ── Flash sale horizontal list
-        _section(
-          bg: _C.white,
-          child: _HList(
-            items: _kFlash,
-            onAdd: () => setState(() {}),
-            onTap: _goToProduct,
-          ),
-        ),
-        // ── Gap
-        SliverToBoxAdapter(child: Container(height: 10, color: _C.bg)),
-        // ── Promo banners (desktop only)
-        if (!mobile)
-          _section(
-            bg: _C.bg,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 4),
-              child: _PromoBanners(
-                  onSell: () => Navigator.pushNamed(ctx, '/seller').catchError((_) {})),
-            ),
-          ),
-        if (!mobile)
-          SliverToBoxAdapter(child: Container(height: 10, color: _C.bg)),
-        // ── Recommended heading
-        _section(
-          bg: _C.bg,
-          child: _SectionHead(title: 'Recommended for You', onAction: _showRecommendPage),
-        ),
-        // ── Product grid
-        _section(
-          bg: _C.bg,
-          child: _ProdGrid(
-            items: _kRec,
-            onAdd: () => setState(() {}),
-            onTap: _goToProduct,
-          ),
-        ),
-        // ── Spacer
-        SliverToBoxAdapter(child: Container(height: 12, color: _C.bg)),
-        // ── Footer (desktop only) — full width dark bg, centered content
-        if (!mobile)
-          SliverToBoxAdapter(
-            child: Container(
-              color: const Color(0xFF1A1A1A),
-              width: double.infinity,
-              child: Center(
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: _BP.maxW),
-                  child: const _Footer(),
-                ),
-              ),
-            ),
-          ),
-        if (!mobile)
-          SliverToBoxAdapter(child: Container(height: 16, color: const Color(0xFF0D0D0D))),
-      ],
+        const SizedBox(height: 12),
+        if (!_BP.isMob(ctx)) const _Footer(),
+      ]),
     );
   }
 
-  // ── Drawer ──────────────────────────────────────────────────
+  // ── Drawer ─────────────────────────────────────────────────
   Widget _buildDrawer(BuildContext ctx) {
     final navItems = [
       {'icon': Icons.home_rounded,         'label': 'Home',         'route': '/'},
@@ -566,7 +603,7 @@ class _HomepageState extends State<Homepage> {
     );
   }
 
-  // ── Bottom Navigation ───────────────────────────────────────
+  // ── Bottom Navigation ─────────────────────────────────────
   Widget _buildBottomNav(BuildContext ctx) {
     return Container(
       decoration: BoxDecoration(color: _C.white, boxShadow: [
@@ -718,11 +755,7 @@ class _FallbackLogo extends StatelessWidget {
   ]);
 }
 
-// ══════════════════════════════════════════════════════════════
-// Web AppBar — FULLY CENTRALIZED (matches CartPage pattern)
-// ✅ Top green strip: full-width dark green bg, content at maxW
-// ✅ Main bar: full-width white bg, content at maxW
-// ══════════════════════════════════════════════════════════════
+// ══════ Web AppBar ═══════════════════════════════════════════
 class _WebBar extends StatelessWidget {
   final int cartCount, navIdx, notifCount;
   final ValueChanged<int> onNav;
@@ -739,89 +772,481 @@ class _WebBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    return Container(color: _C.white, child: Column(mainAxisSize: MainAxisSize.min, children: [
+      Container(
+        color: _C.darkGreen,
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 5),
+        child: Row(children: [
+          const Flexible(child: Text('🚚  Free delivery on orders above Rs.2000',
+              style: TextStyle(color: Colors.white70, fontSize: 11), overflow: TextOverflow.ellipsis)),
+          const SizedBox(width: 16),
+          Flexible(child: Wrap(alignment: WrapAlignment.end, spacing: 16, children: [
+            _topLink('Sell on Cartza'), _topLink('Help Center'), _topLink('Track Order'),
+          ])),
+        ]),
+      ),
+      Container(
+        height: 68,
+        decoration: BoxDecoration(color: _C.white, boxShadow: [
+          BoxShadow(color: Colors.black.withOpacity(0.07), blurRadius: 8, offset: const Offset(0, 2)),
+        ]),
+        padding: const EdgeInsets.symmetric(horizontal: 24),
+        child: Row(children: [
+          const _Logo(size: 26), const SizedBox(width: 20),
+          Expanded(child: _SearchBar(ctrl: searchCtrl, compact: false, onSubmit: onSearch)),
+          const SizedBox(width: 12),
+          Flexible(child: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(children: _links.asMap().entries.map((e) => _NavPill(
+              label: e.value, active: navIdx == e.key, onTap: () => onNav(e.key),
+            )).toList()),
+          )),
+          const SizedBox(width: 8),
+          _BagIcon(count: cartCount, onTap: onCart),
+          Stack(clipBehavior: Clip.none, children: [
+            IconButton(onPressed: onNotif,
+                icon: const Icon(Icons.notifications_outlined, color: _C.slate, size: 22)),
+            if (notifCount > 0) Positioned(top: 6, right: 6, child: Container(
+              width: 8, height: 8,
+              decoration: const BoxDecoration(color: _C.red, shape: BoxShape.circle),
+            )),
+          ]),
+          IconButton(onPressed: onProfile,
+              icon: const Icon(Icons.person_outline, color: _C.slate, size: 22)),
+        ]),
+      ),
+    ]));
+  }
+
+  static Widget _topLink(String t) => InkWell(
+    onTap: () {},
+    child: Text(t, style: const TextStyle(color: Colors.white70, fontSize: 11)),
+  );
+}
+
+class _NavPill extends StatefulWidget {
+  final String label; final bool active; final VoidCallback onTap;
+  const _NavPill({required this.label, required this.active, required this.onTap});
+  @override State<_NavPill> createState() => _NavPillState();
+}
+class _NavPillState extends State<_NavPill> {
+  bool _hov = false;
+  @override
+  Widget build(_) => MouseRegion(
+    onEnter: (_) => setState(() => _hov = true),
+    onExit:  (_) => setState(() => _hov = false),
+    child: GestureDetector(
+      onTap: widget.onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 160),
+        margin: const EdgeInsets.only(left: 2),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+        decoration: BoxDecoration(
+          color: (widget.active || _hov) ? _C.green.withOpacity(0.09) : Colors.transparent,
+          borderRadius: BorderRadius.circular(8),
+          border: widget.active
+              ? const Border(bottom: BorderSide(color: _C.green, width: 2))
+              : null,
+        ),
+        child: Text(widget.label, style: TextStyle(
+          fontSize: 12.5,
+          color: (widget.active || _hov) ? _C.darkGreen : _C.slate,
+          fontWeight: (widget.active || _hov) ? FontWeight.w700 : FontWeight.w500,
+        )),
+      ),
+    ),
+  );
+}
+
+// ══════ Mobile AppBar ════════════════════════════════════════
+class _MobileBar extends StatelessWidget {
+  final bool searchOpen;
+  final TextEditingController searchCtrl;
+  final int cartCount, notifCount;
+  final VoidCallback onMenu, onSearch, onCart, onNotif;
+  final ValueChanged<String> onSearchSubmit;
+  const _MobileBar({
+    required this.searchOpen, required this.searchCtrl,
+    required this.cartCount, required this.notifCount,
+    required this.onMenu, required this.onSearch,
+    required this.onCart, required this.onNotif,
+    required this.onSearchSubmit,
+  });
+
+  @override
+  Widget build(BuildContext context) => Container(
+    decoration: BoxDecoration(color: _C.white, boxShadow: [
+      BoxShadow(color: Colors.black.withOpacity(0.08), blurRadius: 6, offset: const Offset(0, 2)),
+    ]),
+    child: SafeArea(bottom: false, child: Column(mainAxisSize: MainAxisSize.min, children: [
+      SizedBox(height: 56, child: Row(children: [
+        IconButton(onPressed: onMenu,
+            icon: const Icon(Icons.menu_rounded, color: _C.slate, size: 24)),
+        const _Logo(size: 20),
+        const Spacer(),
+        IconButton(onPressed: onSearch,
+            icon: Icon(searchOpen ? Icons.close_rounded : Icons.search_rounded,
+                color: _C.slate, size: 22)),
+        Stack(clipBehavior: Clip.none, children: [
+          IconButton(onPressed: onNotif,
+              icon: const Icon(Icons.notifications_outlined, color: _C.slate, size: 22)),
+          if (notifCount > 0) Positioned(top: 8, right: 8, child: Container(
+            width: 8, height: 8,
+            decoration: const BoxDecoration(color: _C.red, shape: BoxShape.circle),
+          )),
+        ]),
+        _BagIcon(count: cartCount, onTap: onCart),
+        const SizedBox(width: 4),
+      ])),
+      AnimatedCrossFade(
+        firstChild: const SizedBox(height: 0, width: double.infinity),
+        secondChild: _SearchBar(ctrl: searchCtrl, compact: true, onSubmit: onSearchSubmit),
+        crossFadeState: searchOpen ? CrossFadeState.showSecond : CrossFadeState.showFirst,
+        duration: const Duration(milliseconds: 220),
+      ),
+    ])),
+  );
+}
+
+// ══════ Search Bar ════════════════════════════════════════════
+class _SearchBar extends StatefulWidget {
+  final TextEditingController ctrl;
+  final bool compact;
+  final ValueChanged<String> onSubmit;
+  const _SearchBar({required this.ctrl, required this.compact, required this.onSubmit});
+  @override State<_SearchBar> createState() => _SearchBarState();
+}
+class _SearchBarState extends State<_SearchBar> {
+  bool _focused = false;
+  final _fn = FocusNode();
+  @override void initState() {
+    super.initState();
+    _fn.addListener(() => setState(() => _focused = _fn.hasFocus));
+  }
+  @override void dispose() { _fn.dispose(); super.dispose(); }
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: widget.compact
+          ? const EdgeInsets.fromLTRB(10, 0, 10, 8)
+          : EdgeInsets.zero,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 180),
+        height: 44,
+        decoration: BoxDecoration(
+          color: _focused ? _C.white : _C.lightGrey,
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(
+              color: _focused ? _C.orange : Colors.grey.shade300, width: 1.5),
+          boxShadow: _focused
+              ? [BoxShadow(color: _C.orange.withOpacity(0.15), blurRadius: 10)]
+              : [],
+        ),
+        child: Row(children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 10),
+            child: Icon(Icons.search_rounded,
+                color: _focused ? _C.orange : Colors.grey.shade400, size: 20),
+          ),
+          Expanded(
+            child: TextField(
+              controller: widget.ctrl,
+              focusNode: _fn,
+              style: const TextStyle(fontSize: 13.5, color: _C.slate),
+              decoration: InputDecoration(
+                hintText: 'Search products, brands…',
+                hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 13),
+                border: InputBorder.none, isDense: true,
+                contentPadding: const EdgeInsets.symmetric(vertical: 12),
+              ),
+              onChanged: (_) => setState(() {}),
+              onSubmitted: widget.onSubmit,
+              textInputAction: TextInputAction.search,
+            ),
+          ),
+          if (widget.ctrl.text.isNotEmpty)
+            GestureDetector(
+              onTap: () => setState(() => widget.ctrl.clear()),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 4),
+                child: Icon(Icons.close_rounded, size: 16, color: Colors.grey.shade500),
+              ),
+            ),
+          GestureDetector(
+            onTap: () => widget.onSubmit(widget.ctrl.text),
+            child: Container(
+              height: double.infinity,
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(colors: [_C.orange, _C.amber],
+                    begin: Alignment.topLeft, end: Alignment.bottomRight),
+                borderRadius: BorderRadius.horizontal(right: Radius.circular(9)),
+              ),
+              child: const Center(
+                child: Text('Search',
+                    style: TextStyle(color: Colors.white, fontSize: 13,
+                        fontWeight: FontWeight.w800, letterSpacing: 0.3)),
+              ),
+            ),
+          ),
+        ]),
+      ),
+    );
+  }
+}
+
+// ══════ Cart icon ════════════════════════════════════════════
+class _BagIcon extends StatelessWidget {
+  final int count; final VoidCallback onTap;
+  const _BagIcon({required this.count, required this.onTap});
+  @override
+  Widget build(_) => Stack(clipBehavior: Clip.none, children: [
+    IconButton(onPressed: onTap,
+        icon: const Icon(Icons.shopping_bag_outlined, color: _C.slate, size: 22)),
+    if (count > 0) Positioned(top: 4, right: 4, child: Container(
+      padding: const EdgeInsets.all(3),
+      decoration: const BoxDecoration(color: _C.red, shape: BoxShape.circle),
+      constraints: const BoxConstraints(minWidth: 16, minHeight: 16),
+      child: Text('$count', textAlign: TextAlign.center,
+          style: const TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.w800)),
+    )),
+  ]);
+}
+
+// ══════ Delivery strip ═══════════════════════════════════════
+class _DeliveryStrip extends StatelessWidget {
+  static const _items = [
+    [Icons.local_shipping_outlined, 'Free delivery Rs.2000+'],
+    [Icons.replay_outlined,          '7-day easy returns'],
+    [Icons.verified_outlined,        '100% authentic'],
+    [Icons.support_agent_outlined,   '24/7 support'],
+    [Icons.lock_outline,             'Secure payments'],
+  ];
+  @override
+  Widget build(BuildContext context) => Container(
+    color: const Color(0xFFF0F8F0),
+    padding: const EdgeInsets.symmetric(vertical: 8),
+    child: SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Row(children: _items.map((it) => Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        child: Row(mainAxisSize: MainAxisSize.min, children: [
+          Icon(it[0] as IconData, color: _C.green, size: 15),
+          const SizedBox(width: 5),
+          Text(it[1] as String,
+              style: const TextStyle(fontSize: 11.5, color: _C.slate, fontWeight: FontWeight.w500)),
+        ]),
+      )).toList()),
+    ),
+  );
+}
+
+// ══════ Mobile Banner ════════════════════════════════════════
+class _MobileBanner extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final hp  = _BP.hp(context);
+    final mob = _BP.isMob(context);
     return Container(
       color: _C.white,
-      child: Column(mainAxisSize: MainAxisSize.min, children: [
-        // ── Top strip — full-width darkGreen bg, centered content ──
-        Container(
-          color: _C.darkGreen,
-          padding: const EdgeInsets.symmetric(vertical: 5),
-          child: Center(
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: _BP.maxW),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Row(children: [
-                  const Flexible(
-                    child: Text('🚚  Free delivery on orders above Rs.2000',
-                        style: TextStyle(color: Colors.white70, fontSize: 11),
-                        overflow: TextOverflow.ellipsis),
-                  ),
-                  const SizedBox(width: 16),
-                  Flexible(
-                    child: Wrap(alignment: WrapAlignment.end, spacing: 16, children: [
-                      _topLink('Sell on Cartza'),
-                      _topLink('Help Center'),
-                      _topLink('Track Order'),
-                    ]),
-                  ),
-                ]),
+      padding: EdgeInsets.fromLTRB(hp, 10, hp, 10),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(mob ? 10 : 12),
+        child: LayoutBuilder(builder: (_, c) {
+          final h = (c.maxWidth / (mob ? 2.0 : 2.8)).clamp(140.0, 320.0);
+          return SizedBox(width: double.infinity, height: h,
+              child: _BannerSlider(height: h));
+        }),
+      ),
+    );
+  }
+}
+
+// ══════ Banner Slider ════════════════════════════════════════
+class _BannerSlider extends StatefulWidget {
+  final double height;
+  const _BannerSlider({required this.height});
+  @override State<_BannerSlider> createState() => _BannerSliderState();
+}
+class _BannerSliderState extends State<_BannerSlider> {
+  int _cur = 0;
+  final PageController _pc = PageController();
+
+  static final _slides = [
+    {'title': 'Shop Smarter ✨',  'sub': 'Thousands of products at your fingertips', 'url': _Img.banners[0]},
+    {'title': 'Flash Sale! ⚡',   'sub': 'Up to 70% off on selected items',           'url': _Img.banners[1]},
+    {'title': 'New Arrivals 🆕',  'sub': 'Fresh styles dropped this week',            'url': _Img.banners[2]},
+    {'title': 'Electronics 📱',   'sub': 'Latest gadgets at best prices',             'url': _Img.banners[3]},
+    {'title': 'Fashion Week 👗',  'sub': 'Trendy outfits for everyone',               'url': _Img.banners[4]},
+    {'title': 'Home & Living 🏠', 'sub': 'Make your home beautiful',                  'url': _Img.banners[5]},
+  ];
+
+  @override void dispose() { _pc.dispose(); super.dispose(); }
+
+  @override
+  Widget build(BuildContext context) {
+    final mob = _BP.isMob(context);
+    return Stack(children: [
+      PageView.builder(
+        controller: _pc,
+        itemCount: _slides.length,
+        onPageChanged: (i) => setState(() => _cur = i),
+        itemBuilder: (_, i) {
+          final slide = _slides[i];
+          return Stack(fit: StackFit.expand, children: [
+            Image.network(slide['url']!, fit: BoxFit.cover,
+              loadingBuilder: (_, child, progress) => progress == null ? child
+                  : Container(color: _C.green.withOpacity(0.1),
+                  child: const Center(child: CircularProgressIndicator(color: _C.green, strokeWidth: 2))),
+              errorBuilder: (_, __, ___) => Container(
+                decoration: const BoxDecoration(gradient: LinearGradient(
+                    colors: [_C.darkGreen, Color(0xFFFF6F00)],
+                    begin: Alignment.topLeft, end: Alignment.bottomRight)),
               ),
             ),
-          ),
-        ),
-        // ── Main bar — full-width white bg, centered content ──
-        Container(
-          height: 68,
-          decoration: BoxDecoration(color: _C.white, boxShadow: [
-            BoxShadow(color: Colors.black.withOpacity(0.07),
-                blurRadius: 8, offset: const Offset(0, 2)),
-          ]),
-          child: Center(
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: _BP.maxW),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Row(children: [
-                  const _Logo(size: 26),
-                  const SizedBox(width: 20),
-                  Expanded(
-                    child: _SearchBar(ctrl: searchCtrl, compact: false, onSubmit: onSearch),
-                  ),
-                  const SizedBox(width: 12),
-                  Flexible(
-                    child: SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: Row(
-                        children: _links.asMap().entries.map((e) => _NavPill(
-                          label: e.value,
-                          active: navIdx == e.key,
-                          onTap: () => onNav(e.key),
-                        )).toList(),
-                      ),
+            Container(decoration: const BoxDecoration(gradient: LinearGradient(
+                colors: [Color(0xCC000000), Colors.transparent, Color(0x66000000)],
+                begin: Alignment.bottomCenter, end: Alignment.topCenter))),
+            Positioned(
+              bottom: 28, left: mob ? 14 : 24, right: mob ? 60 : 80,
+              child: Column(crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min, children: [
+                    Text(slide['title']!, style: TextStyle(
+                        color: Colors.white, fontSize: mob ? 18 : 24, fontWeight: FontWeight.w900,
+                        shadows: const [Shadow(blurRadius: 8)])),
+                    const SizedBox(height: 4),
+                    Text(slide['sub']!, style: TextStyle(
+                        color: Colors.white.withOpacity(0.9), fontSize: mob ? 11 : 13,
+                        shadows: const [Shadow(blurRadius: 6)])),
+                    const SizedBox(height: 10),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 7),
+                      decoration: BoxDecoration(
+                          gradient: const LinearGradient(colors: [_C.orange, _C.amber]),
+                          borderRadius: BorderRadius.circular(20)),
+                      child: const Text('Shop Now',
+                          style: TextStyle(color: Colors.white, fontWeight: FontWeight.w800, fontSize: 12)),
                     ),
-                  ),
-                  const SizedBox(width: 8),
-                  _BagIcon(count: cartCount, onTap: onCart),
-                  Stack(clipBehavior: Clip.none, children: [
-                    IconButton(
-                      onPressed: onNotif,
-                      icon: const Icon(Icons.notifications_outlined, color: _C.slate, size: 22),
-                    ),
-                    if (notifCount > 0)
-                      Positioned(top: 6, right: 6, child: Container(
-                        width: 8, height: 8,
-                        decoration: const BoxDecoration(color: _C.red, shape: BoxShape.circle),
-                      )),
                   ]),
-                  IconButton(
-                    onPressed: onProfile,
-                    icon: const Icon(Icons.person_outline, color: _C.slate, size: 22),
-                  ),
-                ]),
-              ),
             ),
-          ),
+          ]);
+        },
+      ),
+      Positioned(bottom: 10, right: 12, child: Row(
+        children: List.generate(_slides.length, (i) => AnimatedContainer(
+          duration: const Duration(milliseconds: 250),
+          margin: const EdgeInsets.only(left: 5),
+          width: i == _cur ? 18 : 7, height: 7,
+          decoration: BoxDecoration(
+              color: i == _cur ? Colors.white : Colors.white54,
+              borderRadius: BorderRadius.circular(4)),
+        )),
+      )),
+      if (!_BP.isMob(context)) ...[
+        Positioned(left: 8, top: 0, bottom: 0, child: Center(child: GestureDetector(
+          onTap: () => _pc.previousPage(duration: const Duration(milliseconds: 300), curve: Curves.easeInOut),
+          child: Container(padding: const EdgeInsets.all(6),
+              decoration: const BoxDecoration(color: Colors.black38, shape: BoxShape.circle),
+              child: const Icon(Icons.chevron_left_rounded, color: Colors.white, size: 22)),
+        ))),
+        Positioned(right: 8, top: 0, bottom: 0, child: Center(child: GestureDetector(
+          onTap: () => _pc.nextPage(duration: const Duration(milliseconds: 300), curve: Curves.easeInOut),
+          child: Container(padding: const EdgeInsets.all(6),
+              decoration: const BoxDecoration(color: Colors.black38, shape: BoxShape.circle),
+              child: const Icon(Icons.chevron_right_rounded, color: Colors.white, size: 22)),
+        ))),
+      ],
+    ]);
+  }
+}
+
+// ══════ Desktop Hero Row ═════════════════════════════════════
+class _DesktopHeroRow extends StatelessWidget {
+  final void Function([String?]) onCat;
+  const _DesktopHeroRow({required this.onCat});
+
+  @override
+  Widget build(BuildContext context) {
+    final hp = _BP.hp(context);
+    return Container(color: _C.white,
+      padding: EdgeInsets.fromLTRB(hp, 12, hp, 12),
+      child: Center(child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: _BP.maxW),
+        child: LayoutBuilder(builder: (_, c) {
+          const sideW = 210.0;
+          final bannerW = c.maxWidth - sideW - 12;
+          final bannerH = (bannerW / 3.0).clamp(160.0, 300.0);
+          return SizedBox(height: bannerH,
+            child: Row(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+              SizedBox(width: sideW, child: _CatSidebar(onCat: onCat)),
+              const SizedBox(width: 12),
+              Expanded(child: ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: _BannerSlider(height: bannerH),
+              )),
+            ]),
+          );
+        }),
+      )),
+    );
+  }
+}
+
+class _CatSidebar extends StatelessWidget {
+  final void Function([String?]) onCat;
+  const _CatSidebar({required this.onCat});
+  @override
+  Widget build(BuildContext context) => Container(
+    decoration: BoxDecoration(color: _C.white,
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: _C.green.withOpacity(0.18))),
+    child: Column(children: [
+      Container(width: double.infinity,
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
+        decoration: const BoxDecoration(color: _C.green,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(10))),
+        child: const Row(children: [
+          Icon(Icons.grid_view_rounded, color: Colors.white, size: 15), SizedBox(width: 6),
+          Text('All Categories', style: TextStyle(
+              color: Colors.white, fontWeight: FontWeight.w800, fontSize: 12.5)),
+        ]),
+      ),
+      Expanded(child: ListView.builder(
+        padding: EdgeInsets.zero,
+        itemCount: _categories.length > 10 ? 10 : _categories.length,
+        itemBuilder: (ctx, i) {
+          final cat = _categories[i];
+          return InkWell(
+            onTap: () => onCat(cat['name'] as String),
+            hoverColor: _C.green.withOpacity(0.05),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+              child: Row(children: [
+                ClipOval(child: SizedBox(width: 26, height: 26,
+                  child: Image.network(cat['img'] as String, fit: BoxFit.cover,
+                      errorBuilder: (_, __, ___) => Container(
+                          color: (cat['color'] as Color).withOpacity(0.12),
+                          child: Icon(cat['icon'] as IconData, color: cat['color'] as Color, size: 14))),
+                )),
+                const SizedBox(width: 8),
+                Expanded(child: Text(cat['name'] as String,
+                    maxLines: 1, overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(fontSize: 11.5, color: _C.slate, fontWeight: FontWeight.w500))),
+                const Icon(Icons.chevron_right_rounded, size: 14, color: Colors.grey),
+              ]),
+            ),
+          );
+        },
+      )),
+      InkWell(
+        onTap: () => onCat(),
+        child: Container(width: double.infinity,
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          decoration: BoxDecoration(color: _C.green.withOpacity(0.06),
+              borderRadius: const BorderRadius.vertical(bottom: Radius.circular(10))),
+          child: const Center(child: Text('See All Categories',
+              style: TextStyle(color: _C.green, fontSize: 11.5, fontWeight: FontWeight.w700))),
         ),
       ]),
     );
